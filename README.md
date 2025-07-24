@@ -55,7 +55,7 @@ diabetes-prediction/
 ├── data/
 │   └── diabetes.csv               # The dataset used for training
 ├── notebooks/
-│   └── model_training.ipynb       # Jupyter notebook for EDA and model training
+│   └── model_training.ipynb       # vs code for EDA and model training
 └── README.md                      # You're reading this!
 ```
 
@@ -66,7 +66,7 @@ diabetes-prediction/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/diabetes-prediction.git
+git clone https://github.com/sanjula77/diabetes-prediction.git
 cd diabetes-prediction
 ```
 
