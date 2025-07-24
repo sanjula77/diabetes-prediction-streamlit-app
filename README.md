@@ -125,7 +125,20 @@ The notebook `notebooks/model_training.ipynb` provides a detailed walkthrough of
 
 ## 📸 Screenshots
 
-*(This is a great place to add screenshots of your running application!)*
+### Home Page
+![Home Page](./assets/home.png)
+
+### Data Exploration
+![Data Exploration Page](./assets/data.png)
+
+### Visualizations
+![Visualizations Page](./assets/visualization.png)
+
+### Prediction
+![Prediction Page](./assets/prediction.png)
+
+### Model Performance
+![Model Performance Page](./assets/performance.png)
 
 ---
 
