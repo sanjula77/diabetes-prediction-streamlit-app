@@ -450,39 +450,98 @@ def prediction_ui(features):
             st.progress(confidence)
             st.caption(f"Model Confidence: {confidence:.2%}")
 
+# --- Helper function: model performance display ---
 def model_performance(data):
-    st.subheader("Model Performance Metrics")
+    st.markdown('<h2 class="section-header">📋 Model Performance Metrics</h2>', unsafe_allow_html=True)
     
     # Load the saved model
     model = joblib.load("notebooks/random_forest_model.pkl")
     
-    # 🔄 Use test data instead of training data!
+    # Use test data
     X = pd.read_csv('data/X_test.csv')
     y = pd.read_csv('data/y_test.csv').squeeze()
 
     # Make predictions
     y_pred = model.predict(X)
 
-    # Compute accuracy and F1
+    # Compute metrics
     accuracy = accuracy_score(y, y_pred)
     f1 = f1_score(y, y_pred)
     
-    # Display metrics
-    st.write(f"Accuracy: {accuracy:.4f}")
-    st.write(f"F1 Score: {f1:.4f}")
+    # Display metrics in cards
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style = "color:  #2c3e50;">🎯 Accuracy</h4>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #28a745;">{accuracy:.4f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style = "color:  #2c3e50;">📊 F1 Score</h4>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #17a2b8;">{f1:.4f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style = "color:  #2c3e50;">📈 Test Samples</h4>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #ffc107;">{len(y)}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style = "color:  #2c3e50;">🔍 Features</h4>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">{X.shape[1]}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("---")
     
     # Confusion Matrix
-    cm = confusion_matrix(y, y_pred)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["No Diabetes", "Diabetes"])
+    st.markdown('<h3 class="section-header">🔍 Confusion Matrix</h3>', unsafe_allow_html=True)
     
-    fig, ax = plt.subplots()
-    disp.plot(ax=ax)
-    st.pyplot(fig)
+    cm = confusion_matrix(y, y_pred)
+    
+    # Create Plotly confusion matrix
+    fig = go.Figure(data=go.Heatmap(
+        z=cm,
+        x=['Predicted No Diabetes', 'Predicted Diabetes'],
+        y=['Actual No Diabetes', 'Actual Diabetes'],
+        text=cm,
+        texttemplate="%{text}",
+        textfont={"size": 16},
+        colorscale='Blues'
+    ))
+    
+    fig.update_layout(
+        title="Confusion Matrix",
+        title_x=0.5,
+        title_font_size=16,
+        xaxis_title="Predicted",
+        yaxis_title="Actual"
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Classification Report
+    with st.expander("📊 Detailed Classification Report"):
+        report = classification_report(y, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        st.dataframe(report_df, use_container_width=True)
 
 # ------------- Main app logic -------------
 
 if menu == "Data Exploration":
     show_data_overview(df)
+    st.markdown("---")
     filter_data(df)
 
 elif menu == "Visualizations":
