@@ -80,44 +80,128 @@ def load_data():
 
 df = load_data()
 
-# --- App Header ---
-st.markdown('<h1 class="main-header">🏥 Diabetes Prediction Application</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header"> Diabetes Prediction Application</h1>', unsafe_allow_html=True)
 st.markdown("""
-<div style='text-align: center; color: #666; margin-bottom: 2rem;'>
+<div class="main-description">
     This interactive app allows users to explore the Pima Indians Diabetes Dataset, visualize key insights,
     and predict diabetes risk based on input features using a tuned Random Forest model.
 </div>
 """, unsafe_allow_html=True)
+
+
+
+
+st.markdown("""
+<style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global Styles */
+    .main {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .main-header {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1f77b4, #2ca02c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 1rem;
+        padding: 1rem 0;
+    }
+            
+    .main-description {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        padding: 0 2rem;
+    }
+
+       /* Enhanced Metric Cards */
+    .metric-card {
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #1f77b4, #2ca02c, #ff7f0e);
+    }
+    
+    .metric-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-subtitle {
+        font-size: 0.8rem;
+        color: #95a5a6;
+        font-weight: 400;
+    }
+
+    /* Divider Styling */
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #1f77b4, transparent);
+        margin: 2rem 0;
+    }
+
+    .footer {
+        text-align: center;
+        color: #6c757d;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-top: 2rem;
+        border-top: 3px solid #1f77b4;
+    }        
+            
+</style>
+""", unsafe_allow_html=True)
+
+
+
 
 # --- Sidebar Navigation ---
 menu = st.sidebar.radio("Navigate", ["Data Exploration", "Visualizations", "Prediction", "Model Performance"])
 
 # # --- Helper function: Show dataset overview ---
 def show_data_overview(data):
-    st.markdown("""
-        <style>
-        .metric-card {
-            background-color: #2c3e50;
-            border-radius: 12px;
-            padding: 1.3rem;
-            text-align: left;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            height: 100%;
-        }
-        .metric-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #f8f9fa;
-            margin-bottom: 0.5rem;
-        }
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color:rgb(213, 214, 215);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
+    
     st.markdown('<h2 class="section-header">📊 Dataset Overview</h2>', unsafe_allow_html=True)
 
     # Create 4 metric columns
@@ -133,10 +217,11 @@ def show_data_overview(data):
 
     with col2:
         target_dist = data['Outcome'].value_counts().to_dict()
+        diabetes_pct = (target_dist.get(1, 0) / len(data) * 100)
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">🎯 Distribution</div>
-            <div class="metric-value">{{0: {target_dist.get(0, 0)}, 1: {target_dist.get(1, 0)}}}</div>
+            <div class="metric-title">🎯 Diabetes Cases</div>
+            <div class="metric-value">{target_dist.get(1, 0)} ({diabetes_pct:.1f}%)</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -152,8 +237,8 @@ def show_data_overview(data):
         missing = data.isnull().sum().sum()
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">🔍 Missing Values</div>
-            <div class="metric-value">{missing}</div>
+            <div class="metric-title">🔍 Data Quality</div>
+            <div class="metric-value">{"✅ Clean" if missing == 0 else f"⚠️ {missing}"}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -205,27 +290,55 @@ def filter_data(data):
     ]
     
     # Display filtered results
-    col1, col2 = st.columns(2)
+    st.markdown("---")
     
-    with col1:
+    result_cols = st.columns(4)
+    
+    with result_cols[0]:
         st.markdown(f"""
         <div class="metric-card">
-            <h4>📊 Filtered Records</h4>
-            <p style="font-size: 1.5rem; font-weight: bold; color: #1f77b4;">{len(filtered)}</p>
+            <div class="metric-title">📊 Filtered Records</div>
+            <div class="metric-value">{len(filtered)}</div>
+            <div class="metric-subtitle">patients</div>
         </div>
         """, unsafe_allow_html=True)
     
-    with col2:
+    with result_cols[1]:
+        reduction_pct = ((len(data) - len(filtered)) / len(data) * 100)
         st.markdown(f"""
         <div class="metric-card">
-            <h4>📈 Original Records</h4>
-            <p style="font-size: 1.5rem; font-weight: bold; color: #1f77b4;">{len(data)}</p>
+            <div class="metric-title">📉 Reduction</div>
+            <div class="metric-value">{reduction_pct:.1f}%</div>
+            <div class="metric-subtitle">filtered out</div>
         </div>
         """, unsafe_allow_html=True)
     
+    with result_cols[2]:
+        diabetes_in_filtered = filtered['Outcome'].sum()
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-title">🎯 Diabetes Cases</div>
+            <div class="metric-value">{diabetes_in_filtered}</div>
+            <div class="metric-subtitle">in filtered data</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with result_cols[3]:
+        if len(filtered) > 0:
+            diabetes_rate = (diabetes_in_filtered / len(filtered) * 100)
+        else:
+            diabetes_rate = 0
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-title">📈 Diabetes Rate</div>
+            <div class="metric-value">{diabetes_rate:.1f}%</div>
+            <div class="metric-subtitle">in selection</div>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("---")
     st.markdown('<h3 class="section-header">📋 Filtered Data</h3>', unsafe_allow_html=True)
-    st.dataframe(filtered, use_container_width=True)
+    st.dataframe(filtered, use_container_width=True, hide_index=True) 
 
 # # --- Helper function: Visualizations ---
 def visualizations(data):
@@ -557,8 +670,18 @@ elif menu == "Model Performance":
 # --- Footer ---
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; color: #666; padding: 1rem;'>
-    <p>🏥 Diabetes Prediction Application | Built with Streamlit & Machine Learning</p>
-    <p>📊 Pima Indians Diabetes Dataset | Random Forest Model</p>
+<div class="footer">
+    <div style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">
+        🏥 Diabetes Prediction Application
+    </div>
+    <div style="margin-bottom: 1rem;">
+        <span style="color: #1f77b4;">🤖 Powered by Machine Learning</span> | 
+        <span style="color: #2ca02c;">📊 Built with Streamlit</span> | 
+        <span style="color: #ff7f0e;">🔬 Pima Indians Dataset</span>
+    </div>
+    <div style="font-size: 0.9rem; color: #6c757d;">
+        <strong>Disclaimer:</strong> This tool is for educational purposes only. 
+        Always consult healthcare professionals for medical decisions.
+    </div>
 </div>
 """, unsafe_allow_html=True)
