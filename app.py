@@ -120,8 +120,38 @@ st.markdown("""
         margin-bottom: 2rem;
         padding: 0 2rem;
     }
+            
+    /* Input Summary Cards */
+    .input-summary-card {
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease;
+    }
+    
+    .input-summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+            
+    .input-card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-card-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f77b4;
+    }
 
-       /* Enhanced Metric Cards */
+    /* Enhanced Metric Cards */
     .metric-card {
         background: linear-gradient(135deg, #ffffff, #f8f9fa);
         border-radius: 16px;
@@ -192,9 +222,6 @@ st.markdown("""
             
 </style>
 """, unsafe_allow_html=True)
-
-
-
 
 # --- Sidebar Navigation ---
 menu = st.sidebar.radio("Navigate", ["Data Exploration", "Visualizations", "Prediction", "Model Performance"])
@@ -372,6 +399,41 @@ def visualizations(data):
             showlegend=False
         )
         st.plotly_chart(fig, use_container_width=True)
+
+        # Add statistical insights
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📊 Mean</div>
+                <div class="input-card-value">{data[feature].mean():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📈 Median</div>
+                <div class="input-card-value">{data[feature].median():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📏 Std Dev</div>
+                <div class="input-card-value">{data[feature].std():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">🎯 Range</div>
+                <div class="input-card-value">{data[feature].max() - data[feature].min():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
     
     elif chart_type == "🔥 Correlation Heatmap":
         fig = px.imshow(
@@ -428,6 +490,8 @@ def visualizations(data):
             showlegend=False
         )
         st.plotly_chart(fig, use_container_width=True)
+
+
 
 # # --- Helper function: User input for prediction ---
 def user_input_features():
