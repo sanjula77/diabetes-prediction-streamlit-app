@@ -120,8 +120,38 @@ st.markdown("""
         margin-bottom: 2rem;
         padding: 0 2rem;
     }
+            
+    /* Input Summary Cards */
+    .input-summary-card {
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease;
+    }
+    
+    .input-summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+            
+    .input-card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-card-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f77b4;
+    }
 
-       /* Enhanced Metric Cards */
+    /* Enhanced Metric Cards */
     .metric-card {
         background: linear-gradient(135deg, #ffffff, #f8f9fa);
         border-radius: 16px;
@@ -179,6 +209,53 @@ st.markdown("""
         background: linear-gradient(90deg, transparent, #1f77b4, transparent);
         margin: 2rem 0;
     }
+            
+    /* Prediction Result Cards */
+    .prediction-result {
+        padding: 2rem;
+        border-radius: 16px;
+        margin: 0.7rem 0;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .prediction-result:hover {
+        transform: translateY(-2px);
+    }
+            
+    .success-result {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: 2px solid #28a745;
+        color: #155724;
+    }
+    
+    .error-result {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        border: 2px solid #dc3545;
+        color: #721c24;
+    }
+            
+    /* Button Styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #1f77b4, #2ca02c);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(31, 119, 180, 0.3);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(31, 119, 180, 0.4);
+    }
+
 
     .footer {
         text-align: center;
@@ -192,9 +269,6 @@ st.markdown("""
             
 </style>
 """, unsafe_allow_html=True)
-
-
-
 
 # --- Sidebar Navigation ---
 menu = st.sidebar.radio("Navigate", ["Data Exploration", "Visualizations", "Prediction", "Model Performance"])
@@ -372,6 +446,41 @@ def visualizations(data):
             showlegend=False
         )
         st.plotly_chart(fig, use_container_width=True)
+
+        # Add statistical insights
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📊 Mean</div>
+                <div class="input-card-value">{data[feature].mean():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📈 Median</div>
+                <div class="input-card-value">{data[feature].median():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">📏 Std Dev</div>
+                <div class="input-card-value">{data[feature].std():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            st.markdown(f"""
+            <div class="input-summary-card">
+                <div class="input-card-title">🎯 Range</div>
+                <div class="input-card-value">{data[feature].max() - data[feature].min():.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
     
     elif chart_type == "🔥 Correlation Heatmap":
         fig = px.imshow(
@@ -499,39 +608,64 @@ def user_input_features():
 def prediction_ui(features):
     st.markdown('<h2 class="section-header">🔮 Diabetes Risk Prediction</h2>', unsafe_allow_html=True)
     
-    # Display input summary
-    st.markdown('<h3 class="section-header">📋 Input Summary</h3>', unsafe_allow_html=True)
+    # Enhanced input summary with better organization
+    st.markdown('<h3 class="section-header">📋 Patient Profile Summary</h3>', unsafe_allow_html=True)
     
-    # Create input summary cards
-    cols = st.columns(4)
-    feature_names = {
-        'Pregnancies': '👶 Pregnancies',
-        'Glucose': '🩸 Glucose',
-        'BloodPressure': '💓 Blood Pressure',
-        'SkinThickness': '📏 Skin Thickness',
-        'Insulin': '💉 Insulin',
-        'BMI': '⚖️ BMI',
-        'DiabetesPedigreeFunction': '🧬 Pedigree',
-        'Age': '👤 Age'
-    }
+    # Create organized input summary
+    demo_col, lab_col, phys_col, genetic_col = st.columns(4)
     
-    for i, (col, value) in enumerate(features.iloc[0].items()):
-        with cols[i % 4]:
-            st.markdown(f"""
-            <div class="metric-card">
-                <h4>{feature_names[col]}</h4>
-                <p style="font-size: 1.2rem; font-weight: bold; color: #1f77b4;">{value}</p>
+    with demo_col:
+        st.markdown("""
+        <div class="input-summary-card">
+            <div class="input-card-title">👶 Demographics</div>
+            <div style="font-size: 0.9rem; color: #6c757d;">
+                Age: <strong>{}</strong><br>
+                Pregnancies: <strong>{}</strong>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """.format(features.iloc[0]['Age'], features.iloc[0]['Pregnancies']), unsafe_allow_html=True)
+    
+    with lab_col:
+        st.markdown("""
+        <div class="input-summary-card">
+            <div class="input-card-title">🩸 Lab Results</div>
+            <div style="font-size: 0.9rem; color: #6c757d;">
+                Glucose: <strong>{}</strong><br>
+                Insulin: <strong>{}</strong>
+            </div>
+        </div>
+        """.format(features.iloc[0]['Glucose'], features.iloc[0]['Insulin']), unsafe_allow_html=True)
+    
+    with phys_col:
+        st.markdown("""
+        <div class="input-summary-card">
+            <div class="input-card-title">📏 Physical</div>
+            <div style="font-size: 0.9rem; color: #6c757d;">
+                BMI: <strong>{}</strong><br>
+                BP: <strong>{}</strong>
+            </div>
+        </div>
+        """.format(features.iloc[0]['BMI'], features.iloc[0]['BloodPressure']), unsafe_allow_html=True)
+    
+    with genetic_col:
+        st.markdown("""
+        <div class="input-summary-card">
+            <div class="input-card-title">🧬 Genetic</div>
+            <div style="font-size: 0.9rem; color: #6c757d;">
+                Pedigree: <strong>{:.3f}</strong><br>
+                Skin: <strong>{}</strong>
+            </div>
+        </div>
+        """.format(features.iloc[0]['DiabetesPedigreeFunction'], features.iloc[0]['SkinThickness']), unsafe_allow_html=True)
     
     st.markdown("---")
-    
-    # Prediction button and results
+
+    # Enhanced prediction button and results
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        if st.button("🔮 Predict Diabetes Risk", type="primary", use_container_width=True):
-            with st.spinner('🔍 Analyzing data...'):
+        if st.button("🔍 Analyze Diabetes Risk", type="primary", use_container_width=True):
+            with st.spinner('🧠 AI Model Processing...'):
                 # Load training columns
                 train_cols = pd.read_csv('data/X_train.csv').columns
                 # Align user input to training columns
@@ -542,26 +676,119 @@ def prediction_ui(features):
             
             st.markdown("---")
             
-            # Display prediction result
+            # Enhanced prediction result display
             if pred == 1:
                 st.markdown(f"""
                 <div class="prediction-result error-result">
-                    ⚠️ <strong>Positive for Diabetes</strong><br>
-                    Confidence: {pred_proba:.2%}
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">POSITIVE FOR DIABETES RISK</div>
+                    <div style="font-size: 1.1rem;">Model Confidence: <strong>{pred_proba:.1%}</strong></div>
+                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Recommendation: Consult healthcare provider immediately
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div class="prediction-result success-result">
-                    ✅ <strong>Negative for Diabetes</strong><br>
-                    Confidence: {(1-pred_proba):.2%}
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">LOW DIABETES RISK</div>
+                    <div style="font-size: 1.1rem;">Model Confidence: <strong>{(1-pred_proba):.1%}</strong></div>
+                    <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Recommendation: Maintain healthy lifestyle habits
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Add confidence bar
+            # Enhanced confidence visualization
             confidence = pred_proba if pred == 1 else (1 - pred_proba)
-            st.progress(confidence)
-            st.caption(f"Model Confidence: {confidence:.2%}")
+            
+            # Create confidence gauge
+            fig = go.Figure(go.Indicator(
+                mode = "gauge+number+delta",
+                value = confidence * 100,
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': "Model Confidence"},
+                delta = {'reference': 50},
+                gauge = {
+                    'axis': {'range': [None, 100]},
+                    'bar': {'color': "#1f77b4"},
+                    'steps': [
+                        {'range': [0, 50], 'color': "#d4edda"},
+                        {'range': [50, 80], 'color': "#fff3cd"},
+                        {'range': [80, 100], 'color': "#f8d7da"}
+                    ],
+                    'threshold': {
+                        'line': {'color': "red", 'width': 4},
+                        'thickness': 0.75,
+                        'value': 90
+                    }
+                }
+            ))
+            
+            fig.update_layout(height=300)
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Enhanced Risk Factor Analysis with modern card layout
+            st.markdown('<div style="text-align: center;"><h4 class="section-header">🔍 Risk Factor Analysis</h4></div>', unsafe_allow_html=True)
+            
+            # Create modern card layout for risk factors
+            risk_col1, risk_col2 = st.columns(2)
+            
+            with risk_col1:
+                # High Risk Factors Card
+                st.markdown(
+                    """
+                    <div style="background-color:#fff3f3; border-left: 6px solid #dc3545; padding: 16px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                        <h5 style="color:#dc3545; margin-top:0;">🚨 High Risk Factors</h5>
+                    """, unsafe_allow_html=True)
+
+                high_risk = []
+                if features.iloc[0]['Glucose'] > 140:
+                    high_risk.append("• Glucose level above normal (>140 mg/dL)")
+                if features.iloc[0]['BMI'] > 30:
+                    high_risk.append("• BMI indicates obesity (>30)")
+                if features.iloc[0]['Age'] > 45:
+                    high_risk.append("• Age above 45 years")
+                if features.iloc[0]['BloodPressure'] > 90:
+                    high_risk.append("• High blood pressure (>90 mmHg)")
+
+                if high_risk:
+                    for risk in high_risk:
+                        st.markdown(f"<div style='color: #dc3545;'>{risk}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='color: #28a745;'>• No major high-risk factors detected</div>", unsafe_allow_html=True)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+            with risk_col2:
+                # Protective Factors Card
+                st.markdown(
+                    """
+                    <div style="background-color:#f3fff3; border-left: 6px solid #28a745; padding: 16px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                        <h5 style="color:#28a745; margin-top:0;">
+                        ✅ Protective Factors</h5>
+                    """, unsafe_allow_html=True)
+
+                protective = []
+                if features.iloc[0]['BMI'] < 25:
+                    protective.append("• Healthy BMI (<25)")
+                if features.iloc[0]['Age'] < 30:
+                    protective.append("• Young age (<30)")
+                if features.iloc[0]['Glucose'] < 100:
+                    protective.append("• Normal glucose level (<100 mg/dL)")
+                if features.iloc[0]['BloodPressure'] < 80:
+                    protective.append("• Optimal blood pressure (<80 mmHg)")
+
+                if protective:
+                    for factor in protective:
+                        st.markdown(f"<div style='color: #28a745;'>{factor}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div style='color: #6c757d;'>• Consider lifestyle improvements</div>", unsafe_allow_html=True)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Helper function: model performance display ---
 def model_performance(data):
