@@ -50,18 +50,7 @@ st.markdown("""
         border: 1px solid #f5c6cb;
         color: #721c24;
     }
-    .section-header {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-    .sidebar-header {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #1f77b4;
-        margin-bottom: 1rem;
-    }
+   
 </style>
 """, unsafe_allow_html=True)
 
@@ -87,9 +76,6 @@ st.markdown("""
     and predict diabetes risk based on input features using a tuned Random Forest model.
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 st.markdown("""
 <style>
@@ -265,14 +251,87 @@ st.markdown("""
         border-radius: 12px;
         margin-top: 2rem;
         border-top: 3px solid #1f77b4;
-    }        
-            
+    }     
+
+    /* Sidebar section label */
+    .sidebar-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        padding: 0.75rem 1rem 0.25rem 1rem;
+        color: #4B4B4B;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 0.75rem;
+    
+    }
+
+
+    /* Radio buttons themselves */
+    section[data-testid="stSidebar"] .stRadio > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Radio label styling */
+    section[data-testid="stSidebar"] label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #333333;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Highlight active radio option */
+    section[data-testid="stSidebar"] label[data-selected="true"] {
+        background-color: #2563EB20; /* Light blue */
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    /* Hover effect */
+    section[data-testid="stSidebar"] label:hover {
+        background-color: #2563EB20;
+        width: 100%;
+        color: #2563eb;
+        cursor: pointer;
+    }       
+
+    .sidebar-title {
+    font-size: 1.6rem;  
+    font-weight: 600;
+    padding: 1rem rem 2.25rem 1.4rem;
+    color: #ffffff;
+    border-bottom: 1px solid #3a3a3a;
+    margin-bottom: 0.75rem;
+    }
+   
+   
+    .section-header-center {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
 # --- Sidebar Navigation ---
-menu = st.sidebar.radio("Navigate", ["Data Exploration", "Visualizations", "Prediction", "Model Performance"])
+st.sidebar.markdown('<div class="sidebar-title">📚 Navigation</div>', unsafe_allow_html=True)
 
+menu = st.sidebar.radio(
+    label="Main Navigation",
+    options=[
+        "📊 Data Exploration",
+        "📈 Visualizations",
+        "🔮 Prediction",
+        "📋 Model Performance"
+    ],
+    index=0,
+    label_visibility="collapsed"
+)
 # # --- Helper function: Show dataset overview ---
 def show_data_overview(data):
     
@@ -606,7 +665,7 @@ def user_input_features():
 
 # --- Helper function: prediction display ---
 def prediction_ui(features):
-    st.markdown('<h2 class="section-header">🔮 Diabetes Risk Prediction</h2>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header-center">🔮 Diabetes Risk Prediction</div>', unsafe_allow_html=True)
     
     # Enhanced input summary with better organization
     st.markdown('<h3 class="section-header">📋 Patient Profile Summary</h3>', unsafe_allow_html=True)
@@ -879,19 +938,19 @@ def model_performance(data):
 
 # ------------- Main app logic -------------
 
-if menu == "Data Exploration":
+if menu == "📊 Data Exploration":
     show_data_overview(df)
     st.markdown("---")
     filter_data(df)
 
-elif menu == "Visualizations":
+elif menu == "📈 Visualizations":
     visualizations(df)
 
-elif menu == "Prediction":
+elif menu == "🔮 Prediction":
     input_features = user_input_features()
     prediction_ui(input_features)
 
-elif menu == "Model Performance":
+elif menu == "📋 Model Performance":
     model_performance(model)
 
 # --- Footer ---
