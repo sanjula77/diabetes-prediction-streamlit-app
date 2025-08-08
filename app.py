@@ -482,7 +482,7 @@ def visualizations(data):
     st.markdown('<h2 class="section-header">📈 Data Visualizations</h2>', unsafe_allow_html=True)
     
     chart_type = st.selectbox(
-        "📊 Select Chart Type", 
+        "Select Chart Type", 
         ["📊 Histogram", "🔥 Correlation Heatmap", "📈 Scatter Plot", "📊 Box Plot"],
         help="Choose the type of visualization to display"
     )
