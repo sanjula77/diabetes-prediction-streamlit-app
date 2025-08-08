@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for modern styling
+
 st.markdown("""
 <style>
     .main-header {
@@ -77,6 +77,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Custom CSS for modern styling
 st.markdown("""
 <style>
     /* Import Google Fonts */
@@ -264,7 +265,6 @@ st.markdown("""
     
     }
 
-
     /* Radio buttons themselves */
     section[data-testid="stSidebar"] .stRadio > div {
         display: flex;
@@ -293,9 +293,8 @@ st.markdown("""
     section[data-testid="stSidebar"] label:hover {
         background-color: #2563EB20;
         width: 100%;
-        color: #2563eb;
         cursor: pointer;
-    }       
+    }      
 
     .sidebar-title {
     font-size: 1.6rem;  
@@ -306,13 +305,18 @@ st.markdown("""
     margin-bottom: 0.75rem;
     }
    
-   
     .section-header-center {
         font-size: 1.8rem;
         font-weight: 600;
         color: #ffffff;
         margin-bottom: 1rem;
         text-align: center;
+    }
+            
+    section[data-testid="stSidebar"] label {
+    font-size: 1.1rem;       
+    font-weight: 700;        
+    color: #ffffff;          
     }
 
 </style>
@@ -599,10 +603,10 @@ def visualizations(data):
 
 # # --- Helper function: User input for prediction ---
 def user_input_features():
-    st.sidebar.markdown('<h3 class="sidebar-header">🔮 Prediction Inputs</h3>', unsafe_allow_html=True)
+    # st.sidebar.markdown('<h3 class="sidebar-header">🔮 Prediction Inputs</h3>', unsafe_allow_html=True)
     
     # Organize inputs in logical groups
-    st.sidebar.markdown("**👶 Pregnancy & Age**")
+    # st.sidebar.markdown("**👶 Pregnancy & Age**")
     pregnancies = st.sidebar.number_input(
         "Pregnancies", 
         0, 20, 1,
@@ -614,7 +618,7 @@ def user_input_features():
         help="Age in years"
     )
     
-    st.sidebar.markdown("**🩸 Blood Tests**")
+    # st.sidebar.markdown("**🩸 Blood Tests**")
     glucose = st.sidebar.slider(
         "Glucose Level", 
         0, 200, 120,
@@ -631,7 +635,7 @@ def user_input_features():
         help="2-Hour serum insulin (mu U/ml)"
     )
     
-    st.sidebar.markdown("**📏 Physical Measurements**")
+    # st.sidebar.markdown("**📏 Physical Measurements**")
     skin_thickness = st.sidebar.slider(
         "Skin Thickness", 
         0, 100, 20,
